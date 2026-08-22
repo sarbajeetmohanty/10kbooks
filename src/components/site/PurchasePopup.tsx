@@ -46,7 +46,7 @@ export function PurchasePopup() {
   return (
     <aside
       aria-label="Recent purchase notification"
-      className="fixed bottom-24 left-3 z-40 max-w-[22rem] transition-all duration-300 ease-out sm:bottom-24 sm:left-6 animate-fade-up"
+      className="fixed bottom-24 left-3 z-40 max-w-[16rem] sm:max-w-[19rem] transition-all duration-300 ease-out sm:bottom-24 sm:left-6 animate-fade-up"
     >
       <div className="relative flex items-center gap-3 rounded-2xl border-2 border-accent/40 bg-card/95 p-3.5 shadow-2xl shadow-black/80 backdrop-blur-md">
         {/* Close Button */}
