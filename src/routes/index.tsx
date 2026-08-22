@@ -10,6 +10,8 @@ import { StickyTimerBar } from "@/components/site/StickyTimerBar";
 import { PurchasePopup } from "@/components/site/PurchasePopup";
 import { ExitIntentModal } from "@/components/site/ExitIntentModal";
 import { AgeFilterChips } from "@/components/site/AgeFilterChips";
+import { ComparisonTable } from "@/components/site/ComparisonTable";
+import { WhatsAppWidget } from "@/components/site/WhatsAppWidget";
 
 const TITLE = "14,000+ Printable Worksheets for Kids | Simpexmedia Kids";
 const DESC =
@@ -676,6 +678,9 @@ function Index() {
         </div>
       </section>
 
+      {/* Value Comparison & Guarantee */}
+      <ComparisonTable />
+
       {/* FAQ */}
       <section className="bg-primary/30 py-12">
         <div className="mx-auto max-w-5xl px-4">
@@ -762,6 +767,9 @@ function Index() {
 
       {/* Social proof purchase popup */}
       <PurchasePopup />
+
+      {/* Floating WhatsApp Live Assistant */}
+      <WhatsAppWidget />
 
       {/* Exit Intent ₹149 Discount Modal */}
       <ExitIntentModal
