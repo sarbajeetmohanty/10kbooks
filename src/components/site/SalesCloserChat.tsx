@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { generateGeminiResponse } from "@/lib/gemini";
+import { generateGeminiResponse, detectLanguage } from "@/lib/gemini";
 
 type Message = {
   id: string;
@@ -55,69 +55,31 @@ function playWhatsAppChime() {
   }
 }
 
-const KIDS_KNOWLEDGE_BASE_PROMPT = `You are a friendly customer support and sales advisor from the Simpex Media Team for the 14,000+ Printable Kids Worksheets Bundle.
+const KIDS_KNOWLEDGE_BASE_PROMPT = `You are a real human customer support agent from Simpexmedia for the 14,000+ Kids Printable Worksheets Mega Bundle.
 
-#1 TOP PRIORITY RULE - EXACT LANGUAGE & SCRIPT MATCHING (CRITICAL):
-- If user writes in HINGLISH (e.g., "kya hai", "kaise milega", "kitna price hai", "download kaise kare", "sample dikhao", "bacho ke liye"):
-  👉 YOU MUST REPLY 100% IN SIMPLE, SWEET HINGLISH. NEVER REPLY IN ENGLISH!
-- If user writes in ENGLISH: Reply in clear, simple English.
-- If user writes in HINDI (Devanagari): Reply in Hindi.
-- If user writes in regional languages (Tamil, Telugu, Marathi, Bengali, Gujarati): Reply in that exact language.
+#1 TOP PRIORITY RULE - EXACT LANGUAGE & SCRIPT MATCHING:
+- If user writes in ENGLISH: Reply 100% in natural, friendly, simple ENGLISH. Never use Hindi/Hinglish.
+- If user writes in HINGLISH: Reply 100% in sweet, simple HINGLISH. Never use English.
+- If user writes in HINDI (Devanagari): Reply 100% in Hindi (Devanagari script).
 
 #2 TALK IN VERY SIMPLE, COMMON WORDS:
-- Never use difficult English or complicated words.
-- Keep replies to 2 to 3 short, warm, and helpful sentences.
+- Keep answers to 2 to 3 short sentences.
 
-#3 COMPLETE SITE DATA:
-- 14,000+ Printable worksheets for kids aged 2 to 7 (Nursery to Class 1).
-- Covers: English Alphabets A-Z, Numbers 1-50, Phonics, Hindi Varnamala, Math, Coloring, Mazes, Puzzles.
-- 4 Free Bonuses: Montessori Activity Cards, 100+ Bedtime Storybooks, Drawing Guide, Habit Tracker.
-- Reduces mobile phone screen time & boosts writing and brain skills in 15 mins daily.
-- Standard A4 print at home or cyber cafe. Unlimited prints.
-- 60-second delivery to WhatsApp & Email via Google Drive. 100% money-back guarantee.
+#3 COMPLETE BUNDLE INFO:
+- 14,000+ Printable Worksheets for kids aged 2 to 7 years.
+- Topics: English Alphabets, Numbers & Counting, Hindi Varnamala, Shapes & Colors, Phonics, Brain Boosters, Logic, Puzzles, Mazes, Coloring sheets.
+- 4 Free Bonuses: Bedtime Stories, Flashcards, Activity Planner, Origami Fun.
+- Formats: High Quality A4 PDF (print at home or nearby cyber cafe).
+- Price: ₹199 one-time payment for lifetime access with unlimited downloads.
+- Delivery: Instant 60-second delivery to WhatsApp & Email via Google Drive. 100% risk-free.
 
-#4 SPECIAL DISCOUNT RULE (ONLY IF USER ASKS):
-- If user asks for a discount/coupon/lower price in Hinglish:
-  "Sir/Ma'am, aap hamare special customer hain! 🎁 Agle 10 minute ke liye humne aapke liye VIP ₹149 offer unlock kar diya hai. Niche diye button par tap karke turant grab kar lijiye!"
-- If user asks in English:
-  "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Tap the button below to grab lifetime access right now!"
-
-#5 ANTI-BYPASS:
-- If user asks random unrelated questions, bring them politely back to helping their child learn with this bundle.`;
+#4 DISCOUNT TRIGGER (ONLY IF USER ASKS):
+- If asked in Hinglish: "Sir/Ma'am, aap hamare special customer hain! 🎁 Agle 10 minute ke liye humne aapke liye VIP ₹149 offer unlock kar diya hai. Niche diye button par tap karke turant access le lijiye!"
+- If asked in English: "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Tap the button below to grab lifetime access right now!"`;
 
 function getContextualCta(userText: string, checkoutUrl: string): { label: string; url: string } {
   const t = userText.toLowerCase();
-
-  if (
-    t.includes("discount") ||
-    t.includes("kam") ||
-    t.includes("149") ||
-    t.includes("offer") ||
-    t.includes("coupon") ||
-    t.includes("sasta") ||
-    t.includes("less") ||
-    t.includes("paisa")
-  ) {
-    return { label: "🎁 CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔", url: checkoutUrl };
-  }
-
-  if (t.includes("link") || t.includes("drive") || t.includes("delivery") || t.includes("kaise milega")) {
-    return { label: "⚡ GET INSTANT DRIVE ACCESS @ ₹199 ➔", url: checkoutUrl };
-  }
-
-  if (t.includes("safe") || t.includes("trust") || t.includes("fake") || t.includes("scam") || t.includes("refund")) {
-    return { label: "🛡️ UNLOCK 100% RISK-FREE @ ₹199 ➔", url: checkoutUrl };
-  }
-
-  if (t.includes("print") || t.includes("age") || t.includes("saal") || t.includes("bacha") || t.includes("content")) {
-    return { label: "👉 GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl };
-  }
-
-  return { label: "👉 BUY NOW & GET INSTANT ACCESS @ ₹199 ➔", url: checkoutUrl };
-}
-
-function getPsychologicalFallback(userText: string): { reply: string } {
-  const t = userText.toLowerCase();
+  const lang = detectLanguage(userText);
 
   if (
     t.includes("discount") ||
@@ -130,11 +92,55 @@ function getPsychologicalFallback(userText: string): { reply: string } {
     t.includes("paisa")
   ) {
     return {
-      reply:
-        "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Niche diye button par tap karke turant access le lijiye! 👇",
+      label: lang === "english" ? "🎁 CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔" : "🎁 CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔",
+      url: checkoutUrl,
     };
   }
 
+  if (t.includes("link") || t.includes("drive") || t.includes("delivery") || t.includes("kaise milega")) {
+    return {
+      label: lang === "english" ? "⚡ GET INSTANT GOOGLE DRIVE ACCESS @ ₹199 ➔" : "⚡ GET INSTANT DRIVE ACCESS @ ₹199 ➔",
+      url: checkoutUrl,
+    };
+  }
+
+  return { label: "👉 BUY NOW & GET INSTANT ACCESS @ ₹199 ➔", url: checkoutUrl };
+}
+
+function getPsychologicalFallback(userText: string): { reply: string } {
+  const t = userText.toLowerCase();
+  const lang = detectLanguage(userText);
+
+  // Discount
+  if (
+    t.includes("discount") ||
+    t.includes("kam") ||
+    t.includes("149") ||
+    t.includes("offer") ||
+    t.includes("coupon") ||
+    t.includes("sasta") ||
+    t.includes("less") ||
+    t.includes("paisa")
+  ) {
+    if (lang === "english") {
+      return {
+        reply:
+          "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Tap the button below to grab lifetime access right now! 👇",
+      };
+    }
+    if (lang === "hindi") {
+      return {
+        reply:
+          "नमस्ते! आप हमारे विशेष ग्राहक हैं 🎁 अगले 10 मिनट के लिए हमने आपके लिए विशेष ₹149 ऑफर अनलॉक कर दिया है। नीचे दिए बटन पर टैप करके तुरंत लाइफटाइम एक्सेस प्राप्त करें! 👇",
+      };
+    }
+    return {
+      reply:
+        "Sir/Ma'am, aap hamare special customer hain! 🎁 Agle 10 minute ke liye humne aapke liye VIP ₹149 offer unlock kar diya hai. Niche diye button par tap karke turant access le lijiye! 👇",
+    };
+  }
+
+  // Delivery & Access
   if (
     t.includes("link") ||
     t.includes("kaise") ||
@@ -143,12 +149,25 @@ function getPsychologicalFallback(userText: string): { reply: string } {
     t.includes("delivery") ||
     t.includes("drive")
   ) {
+    if (lang === "english") {
+      return {
+        reply:
+          "Within 60 seconds of completing payment, your permanent Google Drive lifetime link will be sent to your WhatsApp and Email! ⚡ You can download and print worksheets anytime.",
+      };
+    }
+    if (lang === "hindi") {
+      return {
+        reply:
+          "भुगतान पूरा होते ही 60 सेकंड के भीतर Google Drive का परमानेंट डाउनलोड लिंक आपके WhatsApp और Email दोनों पर प्राप्त हो जाएगा! ⚡",
+      };
+    }
     return {
       reply:
         "Payment hote hi 1 minute ke andar Google Drive ka permanent link aapke WhatsApp aur Email dono par mil jayega! ⚡ Jab chahein download aur print kijiye. 📥",
     };
   }
 
+  // Content
   if (
     t.includes("age") ||
     t.includes("saal") ||
@@ -160,19 +179,33 @@ function getPsychologicalFallback(userText: string): { reply: string } {
     t.includes("kya hai") ||
     t.includes("inside")
   ) {
+    if (lang === "english") {
+      return {
+        reply:
+          "The bundle includes 14,000+ worksheets for kids aged 2 to 7 years — English Alphabets, Numbers, Hindi Varnamala, Math, Coloring, Mazes, plus 4 Free Story & Activity Bonuses! 🎨",
+      };
+    }
     return {
       reply:
         "Isme 2 se 7 saal ke baccho ke liye 14,000+ worksheets hain — English Alphabets, Numbers, Hindi Varnamala, Math, Coloring, Mazes aur 4 Free Story & Activity Bonuses! 🎨",
     };
   }
 
+  // Printing
   if (t.includes("print") || t.includes("paper") || t.includes("printer")) {
+    if (lang === "english") {
+      return {
+        reply:
+          "Yes! All worksheets are in ready-to-print standard A4 PDF format. You can easily print them at home or at any local print shop. 🖨️",
+      };
+    }
     return {
       reply:
         "Haan ji! Ye simple A4 size PDF me hain. Aap apne ghar ke printer ya pass ke cyber cafe se jab chahein print nikaal sakte hain. 🖨️",
     };
   }
 
+  // Trust
   if (
     t.includes("safe") ||
     t.includes("trust") ||
@@ -182,15 +215,28 @@ function getPsychologicalFallback(userText: string): { reply: string } {
     t.includes("refund") ||
     t.includes("guarantee")
   ) {
+    if (lang === "english") {
+      return {
+        reply:
+          "This is a 100% verified and trusted educational bundle used by over 50,000+ Indian parents. Instant 60-second delivery with a full satisfaction guarantee. 🛡️",
+      };
+    }
     return {
       reply:
-        "100% Safe & Trusted hai! 🛡️ 94,400+ parents already use kar rahe hain. 60 seconds me link deliver hota hai ya 100% money back guarantee hai. ✅",
+        "100% Safe & Trusted worksheets bundle hai! 🛡️ 50,000+ Indian parents ise use kar rahe hain. Instant 60-second delivery aur full money-back guarantee hai. ✅",
     };
   }
 
+  // Default
+  if (lang === "english") {
+    return {
+      reply:
+        "You get 14,000+ printable worksheets & 4 free bonuses with lifetime Google Drive access for just ₹199! Instant delivery to WhatsApp & Email. 🚀",
+    };
+  }
   return {
     reply:
-      "Is 14,000+ worksheets bundle se baccho ka mobile phone dekhna band ho jata hai aur padhai me interest badhta hai. Abhi sirf ₹199 me lifetime access mil raha hai! 😊",
+      "Is bundle me 2 se 7 saal ke baccho ke liye 14,000+ worksheets + 4 free bonuses milte hain. Abhi sirf ₹199 me lifetime access mil raha hai! 🚀",
   };
 }
 
