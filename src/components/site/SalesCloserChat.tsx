@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { generateGeminiResponse } from "@/lib/gemini";
 
 type Message = {
   id: string;
@@ -11,32 +12,28 @@ type Message = {
   };
 };
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
-
 const SYSTEM_PROMPT = `You are "Priya", a friendly, highly persuasive senior educational advisor and sales closer for Simpexmedia Kids (14,000+ Printable Kids Worksheets Bundle).
 
-CRITICAL SALES RULES (Based on High-Converting Indian Consumer Psychology):
-1. GOAL: Convert the parent to complete the ₹199 purchase immediately (or ₹149 if they ask for a discount).
-2. TONE: Warm, caring, respectful, ultra-reassuring, like a helpful teacher or mom.
-3. LANGUAGE MATCHING: MUST reply in the exact language the user wrote:
-   - If user speaks Hindi/Hinglish (e.g., "link kaise milega", "kya ye safe hai"): Reply in smooth, natural Hinglish.
-   - If user speaks English: Reply in clear, warm English.
-   - If user speaks Tamil/Telugu/Marathi/Bengali: Reply in that language.
+CRITICAL SALES & PSYCHOLOGY RULES:
+1. PRIMARY GOAL: Reassure the parent and convert them to buy the 14,000+ bundle now at ₹199 (or ₹149 if they ask for a discount).
+2. DELIVERY TRUTH: Explain that immediately after payment, a permanent Google Drive access link is sent within 60 seconds to their WhatsApp & Email for lifetime access & unlimited downloads.
+3. LANGUAGE MATCHING: MUST reply in the exact same language and dialect the user used:
+   - Hinglish / Hindi (e.g. "kaise milega", "kya ye safe hai"): Reply in warm, natural Hinglish.
+   - English: Reply in warm, polished English.
+   - Regional languages (Tamil, Telugu, Marathi, Bengali): Reply in that language.
 4. KEY FACTS:
-   - DELIVERY: 100% instant Google Drive link delivered to WhatsApp & Email within 60 seconds of payment. Lifetime access, unlimited downloads & home printing.
-   - AGES: 2 to 7 years (Toddlers, Nursery, LKG, UKG, Class 1).
-   - INCLUDES: 14,000+ worksheets (Alphabet, Numbers, Hindi Varnamala, Phonics, Math, Coloring, Mazes) + 4 Free Bonuses.
-   - SCREEN TIME: Specially designed to replace mobile phone addiction with playful learning.
-   - GUARANTEE: 100% risk-free instant delivery guarantee.
-5. CONCISENESS: Keep answers punchy (2-4 sentences max). Never write long boring essays. End with a comforting nudge or call to action.`;
+   - For Ages 2 to 7 Years (Toddler, Nursery, LKG, UKG, Class 1).
+   - Covers 14,000+ worksheets: Alphabet, Numbers, Hindi Varnamala, Phonics, Math, Coloring, Mazes, Puzzles + 4 Free Montessori Bonuses.
+   - Screen-Time Reduction: Replaces harmful mobile screen addiction with engaging pen-and-paper writing habits.
+   - 100% Risk-Free: 60-Second Instant Delivery Guarantee & Full Support.
+5. CONCISENESS: Keep answers strictly 2 to 3 sentences maximum. Be warm, empathetic, and always include a friendly conversion nudge.`;
 
-// Intelligent fallback responses for instant offline / fallback operation
 function getPsychologicalFallback(userText: string): { reply: string; show149?: boolean } {
   const t = userText.toLowerCase();
 
   if (t.includes("link") || t.includes("kaise") || t.includes("how") || t.includes("receive") || t.includes("delivery") || t.includes("drive")) {
     return {
-      reply: "Payment hote hi Google Drive ka permanent link aapke WhatsApp aur Email dono par turant (within 60 seconds) aa jayega! ⚡ Aap jab chahe print kar sakte hain, lifetime validity ke saath. 📥",
+      reply: "Payment hote hi Google Drive ka permanent link aapke WhatsApp aur Email dono par turant (within 60 seconds) aa jayega! ⚡ Aap jab chahein download aur print kar sakte hain, lifetime validity ke saath. 📥",
     };
   }
 
@@ -104,43 +101,20 @@ export function SalesCloserChat({
     setInputValue("");
     setIsTyping(true);
 
+    const isDiscountQuery =
+      text.toLowerCase().includes("discount") ||
+      text.toLowerCase().includes("kam") ||
+      text.toLowerCase().includes("149") ||
+      text.toLowerCase().includes("offer") ||
+      text.toLowerCase().includes("sasta");
+
     try {
       let replyText = "";
-      let show149 = false;
-
-      // Try Gemini API if key is provided
-      if (GEMINI_API_KEY) {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                {
-                  role: "user",
-                  parts: [{ text: `${SYSTEM_PROMPT}\n\nUser Question: ${text}` }],
-                },
-              ],
-              generationConfig: {
-                maxOutputTokens: 200,
-                temperature: 0.6,
-              },
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        }
-      }
-
-      // If no API key or API call fails, use psychological conversion fallback
-      if (!replyText) {
+      try {
+        replyText = await generateGeminiResponse(SYSTEM_PROMPT, text);
+      } catch {
         const fb = getPsychologicalFallback(text);
         replyText = fb.reply;
-        show149 = fb.show149 || false;
       }
 
       setTimeout(() => {
@@ -150,12 +124,12 @@ export function SalesCloserChat({
           sender: "agent",
           text: replyText,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          cta: show149
+          cta: isDiscountQuery
             ? { label: "CLAIM ₹149 DISCOUNT ACCESS ➔", url: checkoutUrl }
             : { label: "GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl },
         };
         setMessages((prev) => [...prev, agentMsg]);
-      }, 750);
+      }, 700);
     } catch {
       setIsTyping(false);
       const fb = getPsychologicalFallback(text);
@@ -231,7 +205,7 @@ export function SalesCloserChat({
                   <span>Priya (Simpex Kids)</span>
                   <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-bold">Verified</span>
                 </p>
-                <p className="text-[10px] text-emerald-200">Online • Replies in 60s with Drive Link</p>
+                <p className="text-[10px] text-emerald-200">Online • Powered by Gemini 3.6 Flash</p>
               </div>
             </div>
             <button
