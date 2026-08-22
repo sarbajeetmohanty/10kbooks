@@ -9,7 +9,6 @@ import { VimeoLite } from "@/components/site/VimeoLite";
 import { StickyTimerBar } from "@/components/site/StickyTimerBar";
 import { PurchasePopup } from "@/components/site/PurchasePopup";
 import { ExitIntentModal } from "@/components/site/ExitIntentModal";
-import { ComparisonTable } from "@/components/site/ComparisonTable";
 import { SalesCloserChat } from "@/components/site/SalesCloserChat";
 
 const TITLE = "14,000+ Printable Worksheets for Kids | Simpexmedia Kids";
@@ -673,9 +672,6 @@ function Index() {
           <Countdown seconds={4500} label="Limited Time Offer" />
         </div>
       </section>
-
-      {/* Value Comparison & Guarantee */}
-      <ComparisonTable />
 
       {/* FAQ */}
       <section className="bg-primary/30 py-12">
