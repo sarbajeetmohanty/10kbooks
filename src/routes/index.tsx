@@ -9,7 +9,6 @@ import { VimeoLite } from "@/components/site/VimeoLite";
 import { StickyTimerBar } from "@/components/site/StickyTimerBar";
 import { PurchasePopup } from "@/components/site/PurchasePopup";
 import { ExitIntentModal } from "@/components/site/ExitIntentModal";
-import { AgeFilterChips } from "@/components/site/AgeFilterChips";
 import { ComparisonTable } from "@/components/site/ComparisonTable";
 import { SalesCloserChat } from "@/components/site/SalesCloserChat";
 
@@ -381,9 +380,6 @@ function Index() {
         />
 
         <CtaButton className="mt-8" />
-
-        {/* Interactive Age-Specific Learning Track Filter */}
-        <AgeFilterChips />
 
         <p className="mt-8 text-center text-base font-bold text-accent sm:text-xl">
           In demand. 157 people bought this in the last 24 hours.
