@@ -220,10 +220,11 @@ export function SalesCloserChat({
   };
 
   const quickChips = [
-    "Google Drive link kaise milega? 📥",
-    "Baccho ke liye kya kya hai? 🧒",
-    "Print normal paper pe hoga? 🖨️",
-    "Payment safe hai na? 🔒",
+    "How to buy this bundle? 💳",
+    "How to get instant Google Drive access? 📥",
+    "How will I receive the download link? ⚡",
+    "Is payment safe & 100% verified? 🛡️",
+    "Baccho ke liye kya kya included hai? 🧒",
   ];
 
   return (
