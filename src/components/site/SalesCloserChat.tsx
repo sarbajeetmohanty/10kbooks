@@ -12,84 +12,96 @@ type Message = {
   };
 };
 
-const KIDS_KNOWLEDGE_BASE_PROMPT = `You are a top-tier senior educational consultant & sales closing master from the "Simpex Media Team" representing the "14,000+ Printable Kids Worksheets Bundle".
+const KIDS_KNOWLEDGE_BASE_PROMPT = `You are a friendly, helpful sales advisor from the Simpex Media Team for the 14,000+ Printable Kids Worksheets Bundle.
 
-YOUR PSYCHOLOGICAL SALES MISSION:
-Your goal is to turn ANY hesitant parent, teacher, or visitor from "just browsing" into an enthusiastic, confident buyer within 1-2 exchanges. You talk like a real, caring, warm human advisor on WhatsApp (NOT an AI robot).
+CRITICAL INSTRUCTIONS:
+1. USE VERY SIMPLE, COMMON WORDS:
+   - Never use difficult English or complicated words.
+   - Use simple, sweet everyday language that every parent understands easily (Hindi, Hinglish, or simple English).
+   - Keep replies short (2 to 3 simple sentences).
+2. COMPLETE SITE DATA:
+   - 14,000+ Printable worksheets for ages 2 to 7 (Nursery to Class 1).
+   - Covers: A-Z Alphabets, 1-50 Numbers, Phonics, Hindi Varnamala, Math, Coloring, Mazes, Puzzles.
+   - 4 Free Bonuses: Montessori Activity Cards, 100+ Bedtime Storybooks, Drawing Guide, Habit Tracker.
+   - Saves kids from mobile screen addiction & improves handwriting/mind in 15 mins daily.
+   - Standard A4 print from home or cyber cafe. Unlimited prints forever.
+   - 60-second delivery to WhatsApp & Email via Google Drive. 100% money-back guarantee.
+3. DISCOUNT RULE (ONLY IF USER ASKS):
+   - If the user types and asks for a discount, coupon, or says price is high, say:
+     "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you."
+4. ANTI-BYPASS:
+   - If user asks random unrelated questions, bring them politely back to helping their child learn with this bundle.
+5. CONVERSION:
+   - Always encourage them warmly to start today.`;
 
-COMPLETE KNOWLEDGE BASE ABOUT THE KIDS BUNDLE:
-1. WHAT IS INSIDE:
-   - 14,000+ High-Resolution Printable Worksheets across 100+ categories.
-   - Ages 2 to 3 (Toddler): Strokes, lines, curves, big shapes, colors, animal & fruit tracing.
-   - Ages 3 to 5 (Nursery & LKG): English Alphabet A-Z tracing, Phonics sounds, Numbers 1-50, Hindi Varnamala (Swar & Vyanjan), Sight words, Mazes, Connect dots, Coloring.
-   - Ages 5 to 7 (UKG & Class 1): Addition/Subtraction, Word search, Logic puzzles, Sentence formation, Clock & time reading, Money concepts, EVS.
-   - 4 FREE BONUSES: (1) 500+ Montessori Activity Flashcards, (2) 100+ Bedtime Moral Storybooks, (3) Drawing & Doodling Master Guide, (4) Daily Habit & Routine Tracker.
-2. CORE EMOTIONAL BENEFIT:
-   - Eliminates harmful mobile phone screen addiction.
-   - Boosts child handwriting, cognitive thinking, pencil grip, and IQ in just 15 minutes/day.
-   - Unlimited home printing on standard A4 paper for all siblings/kids forever.
-3. DELIVERY & ACCESS:
-   - Permanent Google Drive lifetime access link sent to WhatsApp & Email within 60 seconds of payment.
-   - Over 94,400+ satisfied Indian parents. 100% Risk-Free Money-Back Delivery Guarantee.
-4. PRICING & SPECIAL CUSTOMER DISCOUNT RULE:
-   - Standard Price: ₹199 (One-time payment, zero subscriptions).
-   - If user asks for a discount, coupon, says price is high, or hesitates on ₹199, you MUST enthusiastically say:
-     "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you." and close them with the ₹149 offer.
-5. ANTI-BYPASS & FOCUS GUARDRAIL:
-   - If user asks unrelated random questions, coding, off-topic, or asks for free piracy links without paying, politely and firmly guide them back:
-     "Main yahan aapke child ke learning & 14,000+ worksheets bundle unlock karne ke liye hoon! 😊 Kya main aapko ₹199 (ya VIP ₹149) offer link share karoon?"
-6. HUMAN CONVERSATIONAL STYLE:
-   - Reply in 1 to 2 warm, punchy, conversational sentences.
-   - Mirror the user's exact language (Hinglish, Hindi, English, Tamil, Telugu, Marathi, Bengali, etc.).
-   - Always end with a comforting, low-friction buying nudge.`;
-
-function getPsychologicalFallback(userText: string): { reply: string; isDiscount?: boolean } {
+function getContextualCta(userText: string, checkoutUrl: string): { label: string; url: string } {
   const t = userText.toLowerCase();
 
-  // Discount Query
   if (
     t.includes("discount") ||
     t.includes("kam") ||
-    t.includes("price") ||
     t.includes("149") ||
     t.includes("offer") ||
     t.includes("coupon") ||
     t.includes("sasta") ||
-    t.includes("paisa") ||
     t.includes("less") ||
-    t.includes("bargain")
+    t.includes("paisa")
+  ) {
+    return { label: "🎁 CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔", url: checkoutUrl };
+  }
+
+  if (t.includes("link") || t.includes("drive") || t.includes("delivery") || t.includes("kaise milega")) {
+    return { label: "⚡ GET INSTANT DRIVE ACCESS @ ₹199 ➔", url: checkoutUrl };
+  }
+
+  if (t.includes("safe") || t.includes("trust") || t.includes("fake") || t.includes("scam") || t.includes("refund")) {
+    return { label: "🛡️ UNLOCK 100% RISK-FREE @ ₹199 ➔", url: checkoutUrl };
+  }
+
+  if (t.includes("print") || t.includes("age") || t.includes("saal") || t.includes("bacha") || t.includes("content")) {
+    return { label: "👉 GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl };
+  }
+
+  return { label: "👉 BUY NOW & GET INSTANT ACCESS @ ₹199 ➔", url: checkoutUrl };
+}
+
+function getPsychologicalFallback(userText: string): { reply: string } {
+  const t = userText.toLowerCase();
+
+  if (
+    t.includes("discount") ||
+    t.includes("kam") ||
+    t.includes("149") ||
+    t.includes("offer") ||
+    t.includes("coupon") ||
+    t.includes("sasta") ||
+    t.includes("less") ||
+    t.includes("paisa")
   ) {
     return {
       reply:
-        "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Niche diye button par tap karke instant lifetime access grab kar lijiye: 👇",
-      isDiscount: true,
+        "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Niche diye button par tap karke turant access le lijiye! 👇",
     };
   }
 
-  // Delivery / Drive Link
   if (
     t.includes("link") ||
     t.includes("kaise") ||
     t.includes("how") ||
     t.includes("receive") ||
     t.includes("delivery") ||
-    t.includes("drive") ||
-    t.includes("kaha") ||
-    t.includes("email") ||
-    t.includes("whatsapp")
+    t.includes("drive")
   ) {
     return {
       reply:
-        "Payment complete hote hi 60 seconds ke andar Google Drive ka permanent lifetime link aapke WhatsApp aur Email dono par turant mil jayega! ⚡ Jab chahein download aur print kijiye. 📥",
+        "Payment hote hi 1 minute ke andar Google Drive ka permanent link aapke WhatsApp aur Email dono par mil jayega! ⚡ Jab chahein download aur print kijiye. 📥",
     };
   }
 
-  // Content / What's inside / Ages
   if (
     t.includes("age") ||
     t.includes("saal") ||
     t.includes("year") ||
-    t.includes("class") ||
     t.includes("kid") ||
     t.includes("bacha") ||
     t.includes("bacche") ||
@@ -99,19 +111,17 @@ function getPsychologicalFallback(userText: string): { reply: string; isDiscount
   ) {
     return {
       reply:
-        "Isme 2 se 7 saal (Playgroup to Class 1) ke liye 14,000+ worksheets hain — English, Hindi Varnamala, Phonics, Math, Mazes, Coloring aur 4 Free Montessori Bonuses! 🎨",
+        "Isme 2 se 7 saal ke baccho ke liye 14,000+ worksheets hain — English Alphabets, Numbers, Hindi Varnamala, Math, Coloring, Mazes aur 4 Free Story & Activity Bonuses! 🎨",
     };
   }
 
-  // Printing / Paper
-  if (t.includes("print") || t.includes("paper") || t.includes("printer") || t.includes("hardcopy")) {
+  if (t.includes("print") || t.includes("paper") || t.includes("printer")) {
     return {
       reply:
-        "Haan ji! Ye standard A4 PDF format me hain. Aap apne normal home printer ya pass ke cyber cafe se jitni baar chahein print nikaal sakte hain. 🖨️",
+        "Haan ji! Ye simple A4 size PDF me hain. Aap apne ghar ke printer ya pass ke cyber cafe se jab chahein print nikaal sakte hain. 🖨️",
     };
   }
 
-  // Trust / Safe / Guarantee
   if (
     t.includes("safe") ||
     t.includes("trust") ||
@@ -123,14 +133,13 @@ function getPsychologicalFallback(userText: string): { reply: string; isDiscount
   ) {
     return {
       reply:
-        "100% Safe & Trusted! 🛡️ 94,400+ parents already use kar rahe hain. 60-second instant Google Drive delivery or 100% money-back guarantee hai. Aap confidently le sakte hain! ✅",
+        "100% Safe & Trusted hai! 🛡️ 94,400+ parents already use kar rahe hain. 60 seconds me link deliver hota hai ya 100% money back guarantee hai. ✅",
     };
   }
 
-  // General / Objection Re-route
   return {
     reply:
-      "Ji bilkul! Is 14,000+ worksheets bundle se baccho ka phone screen time turant band ho jata hai aur writing/brain development boost hota hai. Abhi sirf ₹199 mein lifetime access mil raha hai. Kya main checkout link share karoon? 😊",
+      "Is 14,000+ worksheets bundle se baccho ka mobile phone dekhna band ho jata hai aur padhai me interest badhta hai. Abhi sirf ₹199 me lifetime access mil raha hai! 😊",
   };
 }
 
@@ -174,36 +183,7 @@ export function SalesCloserChat({
     setInputValue("");
     setIsTyping(true);
 
-    const isDiscountQuery =
-      text.toLowerCase().includes("discount") ||
-      text.toLowerCase().includes("kam") ||
-      text.toLowerCase().includes("149") ||
-      text.toLowerCase().includes("offer") ||
-      text.toLowerCase().includes("sasta") ||
-      text.toLowerCase().includes("less") ||
-      text.toLowerCase().includes("paisa") ||
-      text.toLowerCase().includes("coupon");
-
-    const isBuyIntent =
-      isDiscountQuery ||
-      text.toLowerCase().includes("buy") ||
-      text.toLowerCase().includes("link") ||
-      text.toLowerCase().includes("purchase") ||
-      text.toLowerCase().includes("pay") ||
-      text.toLowerCase().includes("drive") ||
-      text.toLowerCase().includes("kaise milega") ||
-      text.toLowerCase().includes("kaise kharide") ||
-      text.toLowerCase().includes("lena hai") ||
-      text.toLowerCase().includes("order") ||
-      text.toLowerCase().includes("price") ||
-      text.toLowerCase().includes("cost");
-
-    let cta: { label: string; url: string } | undefined = undefined;
-    if (isDiscountQuery) {
-      cta = { label: "CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔", url: checkoutUrl };
-    } else if (isBuyIntent) {
-      cta = { label: "GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl };
-    }
+    const cta = getContextualCta(text, checkoutUrl);
 
     try {
       let replyText = "";
@@ -241,8 +221,8 @@ export function SalesCloserChat({
 
   const quickChips = [
     "Google Drive link kaise milega? 📥",
-    "Special discount milega kya? 🎁",
-    "Kitne saal ke baccho ke liye hai? 🧒",
+    "Baccho ke liye kya kya hai? 🧒",
+    "Print normal paper pe hoga? 🖨️",
     "Payment safe hai na? 🔒",
   ];
 
@@ -323,7 +303,7 @@ export function SalesCloserChat({
               return (
                 <div key={m.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                   <div
-                    className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed shadow-md ${
+                    className={`max-w-[88%] rounded-2xl p-3 text-xs leading-relaxed shadow-md ${
                       isMe
                         ? "rounded-tr-none bg-[#005C4B] text-white"
                         : "rounded-tl-none bg-[#202C33] text-[#E9EDEF]"
@@ -333,7 +313,7 @@ export function SalesCloserChat({
                     {m.cta && (
                       <a
                         href={m.cta.url}
-                        className="mt-2.5 block rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 py-2.5 text-center text-[11px] font-black uppercase text-black shadow-md transition hover:scale-102 active:scale-98"
+                        className="mt-2.5 flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 py-2 px-3 text-center text-[11px] font-black uppercase text-slate-950 shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
                       >
                         {m.cta.label}
                       </a>
