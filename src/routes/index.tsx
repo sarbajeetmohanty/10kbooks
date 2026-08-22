@@ -11,7 +11,7 @@ import { PurchasePopup } from "@/components/site/PurchasePopup";
 import { ExitIntentModal } from "@/components/site/ExitIntentModal";
 import { AgeFilterChips } from "@/components/site/AgeFilterChips";
 import { ComparisonTable } from "@/components/site/ComparisonTable";
-import { WhatsAppWidget } from "@/components/site/WhatsAppWidget";
+import { SalesCloserChat } from "@/components/site/SalesCloserChat";
 
 const TITLE = "14,000+ Printable Worksheets for Kids | Simpexmedia Kids";
 const DESC =
@@ -768,8 +768,8 @@ function Index() {
       {/* Social proof purchase popup */}
       <PurchasePopup />
 
-      {/* Floating WhatsApp Live Assistant */}
-      <WhatsAppWidget />
+      {/* AI Sales Closer Live Chat (WhatsApp Style) */}
+      <SalesCloserChat checkoutUrl={CHECKOUT_URL} />
 
       {/* Exit Intent ₹149 Discount Modal */}
       <ExitIntentModal
