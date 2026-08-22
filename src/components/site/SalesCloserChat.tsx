@@ -12,28 +12,41 @@ type Message = {
   };
 };
 
-const SYSTEM_PROMPT = `You are a high-performing, warm, and highly persuasive senior educational advisor from the Simpex Media team for "14,000+ Printable Kids Worksheets Bundle".
+const KIDS_KNOWLEDGE_BASE_PROMPT = `You are a top-tier senior educational consultant & sales closing master from the "Simpex Media Team" representing the "14,000+ Printable Kids Worksheets Bundle".
 
-YOUR MISSION & PSYCHOLOGY GUIDELINES:
-1. GREETING & IDENTITY: Always identify as "Simpex Media Team". Be warm, helpful, and empathetic.
-2. DISCOUNT & PRICING OBJECTION (SPECIAL CUSTOMER RULE):
-   - Whenever the user asks for a discount, coupon, says the price is high, or hesitates on paying ₹199, you MUST say:
-     "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. You can grab full lifetime access right now!" (in the user's language).
-3. DELIVERY TRUTH:
-   - Always assure them: "Payment complete hote hi 60 seconds ke andar Google Drive ka permanent lifetime link aapke WhatsApp aur Email dono par receive ho jayega."
-4. CORE BUNDLE HIGHLIGHTS:
-   - 14,000+ worksheets covering 2 to 7 Years (Playgroup, Nursery, LKG, UKG, Class 1).
-   - Alphabet, Numbers, Hindi Varnamala, Phonics, Math, Coloring, Mazes, Puzzles + 4 Free Montessori Story Bonuses.
-   - Screen-Time Reduction: Replaces mobile addiction with hands-on paper learning.
-   - Unlimited Home Printing & Lifetime Access.
-5. LANGUAGE MIRRORING:
-   - Match the user's exact language (Hinglish, Hindi, English, Tamil, Telugu, Marathi, Bengali, etc.).
-6. CONCISENESS & CLOSING:
-   - Keep answers strictly 2 to 3 sentences. Never write boring robotic paragraphs. Always end with a comforting call to action.`;
+YOUR PSYCHOLOGICAL SALES MISSION:
+Your goal is to turn ANY hesitant parent, teacher, or visitor from "just browsing" into an enthusiastic, confident buyer within 1-2 exchanges. You talk like a real, caring, warm human advisor on WhatsApp (NOT an AI robot).
 
-function getPsychologicalFallback(userText: string): { reply: string; show149?: boolean } {
+COMPLETE KNOWLEDGE BASE ABOUT THE KIDS BUNDLE:
+1. WHAT IS INSIDE:
+   - 14,000+ High-Resolution Printable Worksheets across 100+ categories.
+   - Ages 2 to 3 (Toddler): Strokes, lines, curves, big shapes, colors, animal & fruit tracing.
+   - Ages 3 to 5 (Nursery & LKG): English Alphabet A-Z tracing, Phonics sounds, Numbers 1-50, Hindi Varnamala (Swar & Vyanjan), Sight words, Mazes, Connect dots, Coloring.
+   - Ages 5 to 7 (UKG & Class 1): Addition/Subtraction, Word search, Logic puzzles, Sentence formation, Clock & time reading, Money concepts, EVS.
+   - 4 FREE BONUSES: (1) 500+ Montessori Activity Flashcards, (2) 100+ Bedtime Moral Storybooks, (3) Drawing & Doodling Master Guide, (4) Daily Habit & Routine Tracker.
+2. CORE EMOTIONAL BENEFIT:
+   - Eliminates harmful mobile phone screen addiction.
+   - Boosts child handwriting, cognitive thinking, pencil grip, and IQ in just 15 minutes/day.
+   - Unlimited home printing on standard A4 paper for all siblings/kids forever.
+3. DELIVERY & ACCESS:
+   - Permanent Google Drive lifetime access link sent to WhatsApp & Email within 60 seconds of payment.
+   - Over 94,400+ satisfied Indian parents. 100% Risk-Free Money-Back Delivery Guarantee.
+4. PRICING & SPECIAL CUSTOMER DISCOUNT RULE:
+   - Standard Price: ₹199 (One-time payment, zero subscriptions).
+   - If user asks for a discount, coupon, says price is high, or hesitates on ₹199, you MUST enthusiastically say:
+     "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you." and close them with the ₹149 offer.
+5. ANTI-BYPASS & FOCUS GUARDRAIL:
+   - If user asks unrelated random questions, coding, off-topic, or asks for free piracy links without paying, politely and firmly guide them back:
+     "Main yahan aapke child ke learning & 14,000+ worksheets bundle unlock karne ke liye hoon! 😊 Kya main aapko ₹199 (ya VIP ₹149) offer link share karoon?"
+6. HUMAN CONVERSATIONAL STYLE:
+   - Reply in 1 to 2 warm, punchy, conversational sentences.
+   - Mirror the user's exact language (Hinglish, Hindi, English, Tamil, Telugu, Marathi, Bengali, etc.).
+   - Always end with a comforting, low-friction buying nudge.`;
+
+function getPsychologicalFallback(userText: string): { reply: string; isDiscount?: boolean } {
   const t = userText.toLowerCase();
 
+  // Discount Query
   if (
     t.includes("discount") ||
     t.includes("kam") ||
@@ -43,29 +56,35 @@ function getPsychologicalFallback(userText: string): { reply: string; show149?: 
     t.includes("coupon") ||
     t.includes("sasta") ||
     t.includes("paisa") ||
-    t.includes("less")
+    t.includes("less") ||
+    t.includes("bargain")
   ) {
     return {
       reply:
         "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Niche diye button par tap karke instant lifetime access grab kar lijiye: 👇",
-      show149: true,
+      isDiscount: true,
     };
   }
 
+  // Delivery / Drive Link
   if (
     t.includes("link") ||
     t.includes("kaise") ||
     t.includes("how") ||
     t.includes("receive") ||
     t.includes("delivery") ||
-    t.includes("drive")
+    t.includes("drive") ||
+    t.includes("kaha") ||
+    t.includes("email") ||
+    t.includes("whatsapp")
   ) {
     return {
       reply:
-        "Payment complete hote hi 60 seconds ke andar Google Drive ka permanent lifetime link aapke WhatsApp aur Email dono par turant mil jayega! ⚡ Aap jab chahein unlimited times print kar sakte hain. 📥",
+        "Payment complete hote hi 60 seconds ke andar Google Drive ka permanent lifetime link aapke WhatsApp aur Email dono par turant mil jayega! ⚡ Jab chahein download aur print kijiye. 📥",
     };
   }
 
+  // Content / What's inside / Ages
   if (
     t.includes("age") ||
     t.includes("saal") ||
@@ -73,14 +92,26 @@ function getPsychologicalFallback(userText: string): { reply: string; show149?: 
     t.includes("class") ||
     t.includes("kid") ||
     t.includes("bacha") ||
-    t.includes("bacche")
+    t.includes("bacche") ||
+    t.includes("content") ||
+    t.includes("kya hai") ||
+    t.includes("inside")
   ) {
     return {
       reply:
-        "Ye bundle 2 se 7 saal ke sabhi baccho ke liye specially designed hai (Playgroup, Nursery, LKG, UKG aur Class 1). Isme English, Hindi Varnamala, Math, Phonics aur Coloring sab structured hai! 🎨",
+        "Isme 2 se 7 saal (Playgroup to Class 1) ke liye 14,000+ worksheets hain — English, Hindi Varnamala, Phonics, Math, Mazes, Coloring aur 4 Free Montessori Bonuses! 🎨",
     };
   }
 
+  // Printing / Paper
+  if (t.includes("print") || t.includes("paper") || t.includes("printer") || t.includes("hardcopy")) {
+    return {
+      reply:
+        "Haan ji! Ye standard A4 PDF format me hain. Aap apne normal home printer ya pass ke cyber cafe se jitni baar chahein print nikaal sakte hain. 🖨️",
+    };
+  }
+
+  // Trust / Safe / Guarantee
   if (
     t.includes("safe") ||
     t.includes("trust") ||
@@ -92,13 +123,14 @@ function getPsychologicalFallback(userText: string): { reply: string; show149?: 
   ) {
     return {
       reply:
-        "100% Safe & Trusted! 🛡️ Abhi tak 94,400+ parents ne ye bundle successfully unlock kiya hai. Instant Drive access within 60 seconds or 100% money-back guarantee! ✅",
+        "100% Safe & Trusted! 🛡️ 94,400+ parents already use kar rahe hain. 60-second instant Google Drive delivery or 100% money-back guarantee hai. Aap confidently le sakte hain! ✅",
     };
   }
 
+  // General / Objection Re-route
   return {
     reply:
-      "Ji bilkul! Is 14,000+ worksheets bundle se baccho ka phone screen time turant kam hota hai aur handwriting & brain development boost hota hai. Abhi ₹199 mein lifetime access available hai. Kya main checkout link provide karoon? 😊",
+      "Ji bilkul! Is 14,000+ worksheets bundle se baccho ka phone screen time turant band ho jata hai aur writing/brain development boost hota hai. Abhi sirf ₹199 mein lifetime access mil raha hai. Kya main checkout link share karoon? 😊",
   };
 }
 
@@ -149,12 +181,13 @@ export function SalesCloserChat({
       text.toLowerCase().includes("offer") ||
       text.toLowerCase().includes("sasta") ||
       text.toLowerCase().includes("less") ||
+      text.toLowerCase().includes("paisa") ||
       text.toLowerCase().includes("coupon");
 
     try {
       let replyText = "";
       try {
-        replyText = await generateGeminiResponse(SYSTEM_PROMPT, text);
+        replyText = await generateGeminiResponse(KIDS_KNOWLEDGE_BASE_PROMPT, text);
       } catch {
         const fb = getPsychologicalFallback(text);
         replyText = fb.reply;
