@@ -12,52 +12,93 @@ type Message = {
   };
 };
 
-const SYSTEM_PROMPT = `You are "Priya", a friendly, highly persuasive senior educational advisor and sales closer for Simpexmedia Kids (14,000+ Printable Kids Worksheets Bundle).
+const SYSTEM_PROMPT = `You are a high-performing, warm, and highly persuasive senior educational advisor from the Simpex Media team for "14,000+ Printable Kids Worksheets Bundle".
 
-CRITICAL SALES & PSYCHOLOGY RULES:
-1. PRIMARY GOAL: Reassure the parent and convert them to buy the 14,000+ bundle now at ₹199 (or ₹149 if they ask for a discount).
-2. DELIVERY TRUTH: Explain that immediately after payment, a permanent Google Drive access link is sent within 60 seconds to their WhatsApp & Email for lifetime access & unlimited downloads.
-3. LANGUAGE MATCHING: MUST reply in the exact same language and dialect the user used:
-   - Hinglish / Hindi (e.g. "kaise milega", "kya ye safe hai"): Reply in warm, natural Hinglish.
-   - English: Reply in warm, polished English.
-   - Regional languages (Tamil, Telugu, Marathi, Bengali): Reply in that language.
-4. KEY FACTS:
-   - For Ages 2 to 7 Years (Toddler, Nursery, LKG, UKG, Class 1).
-   - Covers 14,000+ worksheets: Alphabet, Numbers, Hindi Varnamala, Phonics, Math, Coloring, Mazes, Puzzles + 4 Free Montessori Bonuses.
-   - Screen-Time Reduction: Replaces harmful mobile screen addiction with engaging pen-and-paper writing habits.
-   - 100% Risk-Free: 60-Second Instant Delivery Guarantee & Full Support.
-5. CONCISENESS: Keep answers strictly 2 to 3 sentences maximum. Be warm, empathetic, and always include a friendly conversion nudge.`;
+YOUR MISSION & PSYCHOLOGY GUIDELINES:
+1. GREETING & IDENTITY: Always identify as "Simpex Media Team". Be warm, helpful, and empathetic.
+2. DISCOUNT & PRICING OBJECTION (SPECIAL CUSTOMER RULE):
+   - Whenever the user asks for a discount, coupon, says the price is high, or hesitates on paying ₹199, you MUST say:
+     "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. You can grab full lifetime access right now!" (in the user's language).
+3. DELIVERY TRUTH:
+   - Always assure them: "Payment complete hote hi 60 seconds ke andar Google Drive ka permanent lifetime link aapke WhatsApp aur Email dono par receive ho jayega."
+4. CORE BUNDLE HIGHLIGHTS:
+   - 14,000+ worksheets covering 2 to 7 Years (Playgroup, Nursery, LKG, UKG, Class 1).
+   - Alphabet, Numbers, Hindi Varnamala, Phonics, Math, Coloring, Mazes, Puzzles + 4 Free Montessori Story Bonuses.
+   - Screen-Time Reduction: Replaces mobile addiction with hands-on paper learning.
+   - Unlimited Home Printing & Lifetime Access.
+5. LANGUAGE MIRRORING:
+   - Match the user's exact language (Hinglish, Hindi, English, Tamil, Telugu, Marathi, Bengali, etc.).
+6. CONCISENESS & CLOSING:
+   - Keep answers strictly 2 to 3 sentences. Never write boring robotic paragraphs. Always end with a comforting call to action.`;
 
 function getPsychologicalFallback(userText: string): { reply: string; show149?: boolean } {
   const t = userText.toLowerCase();
 
-  if (t.includes("link") || t.includes("kaise") || t.includes("how") || t.includes("receive") || t.includes("delivery") || t.includes("drive")) {
+  if (
+    t.includes("discount") ||
+    t.includes("kam") ||
+    t.includes("price") ||
+    t.includes("149") ||
+    t.includes("offer") ||
+    t.includes("coupon") ||
+    t.includes("sasta") ||
+    t.includes("paisa") ||
+    t.includes("less")
+  ) {
     return {
-      reply: "Payment hote hi Google Drive ka permanent link aapke WhatsApp aur Email dono par turant (within 60 seconds) aa jayega! ⚡ Aap jab chahein download aur print kar sakte hain, lifetime validity ke saath. 📥",
-    };
-  }
-
-  if (t.includes("discount") || t.includes("kam") || t.includes("price") || t.includes("149") || t.includes("offer") || t.includes("coupon") || t.includes("sasta")) {
-    return {
-      reply: "Special Offer! 🎁 Kyunki aap apne child ki education ke liye serious hain, main aapke liye secret ₹149 ka instant discount activate kar rahi hoon! Niche button par tap karke grab kar lijiye: 👇",
+      reply:
+        "Sir/Ma'am, you are our special customer! 🎁 For the next 10 minutes only, we have unlocked our VIP ₹149 offer for you. Niche diye button par tap karke instant lifetime access grab kar lijiye: 👇",
       show149: true,
     };
   }
 
-  if (t.includes("age") || t.includes("saal") || t.includes("year") || t.includes("class") || t.includes("kid") || t.includes("bacha") || t.includes("bacche")) {
+  if (
+    t.includes("link") ||
+    t.includes("kaise") ||
+    t.includes("how") ||
+    t.includes("receive") ||
+    t.includes("delivery") ||
+    t.includes("drive")
+  ) {
     return {
-      reply: "Ye bundle 2 se 7 saal ke sabhi baccho ke liye complete hai (Playgroup, Nursery, LKG, UKG aur Class 1). Isme tracing, phonics, Hindi, math aur coloring sab categorized hai! 🎨",
+      reply:
+        "Payment complete hote hi 60 seconds ke andar Google Drive ka permanent lifetime link aapke WhatsApp aur Email dono par turant mil jayega! ⚡ Aap jab chahein unlimited times print kar sakte hain. 📥",
     };
   }
 
-  if (t.includes("safe") || t.includes("trust") || t.includes("fake") || t.includes("real") || t.includes("scam") || t.includes("refund")) {
+  if (
+    t.includes("age") ||
+    t.includes("saal") ||
+    t.includes("year") ||
+    t.includes("class") ||
+    t.includes("kid") ||
+    t.includes("bacha") ||
+    t.includes("bacche")
+  ) {
     return {
-      reply: "100% Safe & Trusted! 🛡️ Abhi tak 94,400+ parents ne ye bundle liya hai. UPI/Cards se payment hote hi 60 seconds mein drive link milta hai. 100% Money-Back Guarantee bhi hai! ✅",
+      reply:
+        "Ye bundle 2 se 7 saal ke sabhi baccho ke liye specially designed hai (Playgroup, Nursery, LKG, UKG aur Class 1). Isme English, Hindi Varnamala, Math, Phonics aur Coloring sab structured hai! 🎨",
+    };
+  }
+
+  if (
+    t.includes("safe") ||
+    t.includes("trust") ||
+    t.includes("fake") ||
+    t.includes("real") ||
+    t.includes("scam") ||
+    t.includes("refund") ||
+    t.includes("guarantee")
+  ) {
+    return {
+      reply:
+        "100% Safe & Trusted! 🛡️ Abhi tak 94,400+ parents ne ye bundle successfully unlock kiya hai. Instant Drive access within 60 seconds or 100% money-back guarantee! ✅",
     };
   }
 
   return {
-    reply: "Ji bilkul! Is 14,000+ worksheets bundle se baccho ka mobile screen time 80% kam ho jata hai aur writing/learning strong hoti hai. Abhi ₹199 mein lifetime access mil raha hai. Kya aapko checkout link share karoon? 😊",
+    reply:
+      "Ji bilkul! Is 14,000+ worksheets bundle se baccho ka phone screen time turant kam hota hai aur handwriting & brain development boost hota hai. Abhi ₹199 mein lifetime access available hai. Kya main checkout link provide karoon? 😊",
   };
 }
 
@@ -71,7 +112,7 @@ export function SalesCloserChat({
     {
       id: "m1",
       sender: "agent",
-      text: "Namaste! 👋 Main Priya hoon Simpexmedia Kids se. Aapke bacche ke learning ke regarding koi bhi sawal ho, please puchiye. Drive access instant milta hai! 🎁",
+      text: "Hey! 👋 We are from Simpex Media team. How can we help you unlock your instant Google Drive access today?",
       time: "Just now",
     },
   ]);
@@ -106,7 +147,9 @@ export function SalesCloserChat({
       text.toLowerCase().includes("kam") ||
       text.toLowerCase().includes("149") ||
       text.toLowerCase().includes("offer") ||
-      text.toLowerCase().includes("sasta");
+      text.toLowerCase().includes("sasta") ||
+      text.toLowerCase().includes("less") ||
+      text.toLowerCase().includes("coupon");
 
     try {
       let replyText = "";
@@ -125,11 +168,11 @@ export function SalesCloserChat({
           text: replyText,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           cta: isDiscountQuery
-            ? { label: "CLAIM ₹149 DISCOUNT ACCESS ➔", url: checkoutUrl }
+            ? { label: "CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔", url: checkoutUrl }
             : { label: "GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl },
         };
         setMessages((prev) => [...prev, agentMsg]);
-      }, 700);
+      }, 650);
     } catch {
       setIsTyping(false);
       const fb = getPsychologicalFallback(text);
@@ -138,7 +181,9 @@ export function SalesCloserChat({
         sender: "agent",
         text: fb.reply,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        cta: { label: "GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl },
+        cta: isDiscountQuery
+          ? { label: "CLAIM ₹149 VIP ACCESS (VALID 10 MIN) ➔", url: checkoutUrl }
+          : { label: "GET 14,000+ WORKSHEETS @ ₹199 ➔", url: checkoutUrl },
       };
       setMessages((prev) => [...prev, agentMsg]);
     }
@@ -146,9 +191,9 @@ export function SalesCloserChat({
 
   const quickChips = [
     "Google Drive link kaise milega? 📥",
+    "Special discount milega kya? 🎁",
     "Kitne saal ke baccho ke liye hai? 🧒",
-    "Special discount milega kya? 💰",
-    "Kya payment 100% safe hai? 🔒",
+    "Payment safe hai na? 🔒",
   ];
 
   return (
@@ -167,7 +212,7 @@ export function SalesCloserChat({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#25D366]" />
           </span>
-          <span>Have a question? <strong className="text-[#25D366]">Chat with Priya</strong></span>
+          <span>Have a question? <strong className="text-[#25D366]">Chat with Us</strong></span>
         </button>
 
         <button
@@ -202,16 +247,16 @@ export function SalesCloserChat({
               </div>
               <div>
                 <p className="text-sm font-black flex items-center gap-1">
-                  <span>Priya (Simpex Kids)</span>
+                  <span>Simpex Media Team</span>
                   <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-bold">Verified</span>
                 </p>
-                <p className="text-[10px] text-emerald-200">Online • Powered by Gemini 3.6 Flash</p>
+                <p className="text-[10px] text-emerald-200">Online • Instant Google Drive Support</p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="grid h-8 w-8 place-items-center rounded-full bg-black/20 text-sm font-bold text-white transition hover:bg-black/40"
+              className="grid h-8 w-8 place-items-center rounded-full bg-black/20 text-sm font-bold text-white transition hover:bg-black/40 cursor-pointer"
             >
               ✕
             </button>
@@ -238,7 +283,7 @@ export function SalesCloserChat({
                     {m.cta && (
                       <a
                         href={m.cta.url}
-                        className="mt-2.5 block rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 py-2 text-center text-[11px] font-black uppercase text-black shadow-md transition hover:scale-102 active:scale-98"
+                        className="mt-2.5 block rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 py-2.5 text-center text-[11px] font-black uppercase text-black shadow-md transition hover:scale-102 active:scale-98"
                       >
                         {m.cta.label}
                       </a>
@@ -253,7 +298,7 @@ export function SalesCloserChat({
 
             {isTyping && (
               <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-none bg-[#202C33] px-3.5 py-2 text-xs text-[#8696a0] w-fit animate-pulse">
-                <span>Priya is typing</span>
+                <span>Simpex Team is typing</span>
                 <span className="animate-bounce">...</span>
               </div>
             )}
